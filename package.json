@@ -1,0 +1,30 @@
+{
+  "name": "on-bridges",
+  "version": "0.0.0",
+  "description": "bridges in ontario",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/uniphil/on-bridges"
+  },
+  "keywords": [
+    "ontario",
+    "bridges",
+    "open",
+    "data"
+  ],
+  "author": "uniphil",
+  "bugs": {
+    "url": "https://github.com/uniphil/on-bridges/issues"
+  },
+  "homepage": "https://github.com/uniphil/on-bridges",
+  "dependencies": {
+    "leaflet": "^0.7.3",
+    "react": "^0.13.3",
+    "react-leaflet": "^0.6.1",
+    "reflux": "^0.2.7"
+  }
+}
