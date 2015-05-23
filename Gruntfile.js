@@ -5,7 +5,9 @@ module.exports = function(grunt) {
 
     browserify: {
       options: {
-        transform: [ 'reactify' ],
+        transform: [
+          ['reactify', {es6: true}],
+        ],
       },
       app: {
         src: 'src/app.js',
@@ -21,7 +23,7 @@ module.exports = function(grunt) {
         files: 'index.html',
       },
       css: {
-        files: 'app.css',
+        files: '*.css',
       },
       src: {
         files: 'src/**/*.{js,jsx}',
