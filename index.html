@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="utf-8" />
+    <title>Ontario Bridges</title>
+    <script>c=document.querySelector('html').classList;c.remove('no-js');c.add('js');</script>
+    <style>
+      .no-js .map-app { display: none; }
+      .js .js-pls { display: none; }
+      .loading {
+        -webkit-animation: fadein 2s ease-in;
+             -o-animation: fadein 2s ease-in;
+                animation: fadein 2s ease-in;
+      }
+      @-webkit-keyframes fadein { from { opacity: 0; } to { opacity: 1; } }
+      @-o-keyframes fadein { from { opacity: 0; } to { opacity: 1; } }
+      @keyframes fadein { from { opacity: 0; } to { opacity: 1; } }
+    </style>
+    <script src="app.js" async></script>
+  </head>
+  <body>
+    <link rel="stylesheet" href="app.css" />
+    <div id="map-app">
+      <p class="loading">Loading application...</p>
+    </div>
+    <div class="js-pls">
+      <p>Unfortunately, the developer of this application is lazy so it only work with javascript enabled in a modern browser. But they promise it will (hopefully) work if you upgrade your browser!</p>
+    </div>
+  </body>
+</html>
