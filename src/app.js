@@ -145,7 +145,7 @@ var Notification = React.createClass({
           </header>
           <div className="body">
             <p>{this.props.message}</p>
-            <button onClick={this.dismiss} title="Close notification">Dismiss</button>
+            <button className="ok" onClick={this.dismiss} title="Close notification">Dismiss</button>
           </div>
         </div>
       </div>

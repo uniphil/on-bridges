@@ -51,14 +51,12 @@ html, body {
   width: 1.1em;
   font-size: 1.618em;
   color: #999;
-  border: none;
   background: none;
-  cursor: pointer;
 }
 
 .notification header button:hover {
-  color: #000;
-  background: hsla(220, 80%, 30%, 0.3);
+  color: white;
+  background: hsla(220, 30%, 10%, 0.2);
 }
 
 .notification .body {
@@ -69,4 +67,22 @@ html, body {
 .notification header,
 .notification .body {
   padding: 10px 16px;
+}
+
+button {
+  padding: 8px 14px;
+  font-size: 1em;
+  border: none;
+  background: hsla(0, 0%, 40%, 0.2);
+  cursor: pointer;
+}
+button:hover {
+  background: hsla(0, 0%, 25%, 0.2);
+}
+
+button.ok {
+  background: hsla(220, 30%, 40%, 0.2);
+}
+button.ok:hover {
+  background: hsla(220, 30%, 25%, 0.2);
 }
