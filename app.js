@@ -35643,7 +35643,7 @@ exports.isBuffer = function (obj) {
 var request = require('then-request');
 var Reflux = require('reflux');
 var React = require('react');
-var $__0=    require('react-leaflet'),Map=$__0.Map,TileLayer=$__0.TileLayer,Marker=$__0.Marker;
+var $__0=     require('react-leaflet'),Map=$__0.Map,TileLayer=$__0.TileLayer,Circle=$__0.Circle,Popup=$__0.Popup;
 
 
 var dataActions = Reflux.createActions({
@@ -35754,7 +35754,37 @@ var BridgeMap = React.createClass({displayName: "BridgeMap",
           .filter(function(bridge) 
             {return bridge.LATITUDE !== null && bridge.LONGITUDE !== null;})
           .map(function(bridge) 
-            {return React.createElement(Marker, {key: bridge.ID, position: [bridge.LATITUDE, bridge.LONGITUDE]});})
+            {return React.createElement(Circle, {
+              key: bridge.ID, 
+              center: [bridge.LATITUDE, bridge.LONGITUDE], 
+              radius: bridge.DECK_LENGTH || 50, 
+              color: "tomato", 
+              opacity: 0.2, 
+              weight: 10, 
+              fillColor: "tomato", 
+              fillOpacity: 0.4}, 
+              React.createElement(Popup, null, 
+                React.createElement("div", null, 
+                  React.createElement("header", null, 
+                    React.createElement("h1", null, bridge.STRUCTURE)
+                  ), 
+                  React.createElement("div", {className: "body"}, 
+                    React.createElement("ul", null, 
+                      React.createElement("li", null, "id: ", bridge.ID), 
+                      React.createElement("li", null, bridge.OPERATION_STATUS), 
+                      React.createElement("li", null, bridge.OWNER), 
+                      React.createElement("li", null, bridge.SUBCATEGORY_1, ", ", bridge.TYPE_1, ", ", bridge.MATERIAL_1), 
+                      React.createElement("li", null, "Built ", bridge.YEAR_BUILT), 
+                      React.createElement("li", null, "Last inspected ", bridge.LAST_INSPECTION_DATE || 'never'), 
+                      React.createElement("li", null, "Major rehab: ", bridge.LAST_MAJOR_REHAB || 'never'), 
+                      React.createElement("li", null, "Minor rehab: ", bridge.LAST_MINOR_REHAB || 'never'), 
+                      React.createElement("li", null, "Length: ", bridge.DECK_LENGTH, " (", bridge.NUMBER_OF_SPANS, " spans)")
+                    )
+                  )
+                )
+              )
+            );}
+          )
       )
     );
   },

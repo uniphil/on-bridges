@@ -1,7 +1,7 @@
 var request = require('then-request');
 var Reflux = require('reflux');
 var React = require('react');
-var {Map, TileLayer, Marker} = require('react-leaflet');
+var {Map, TileLayer, Circle, Popup} = require('react-leaflet');
 
 
 var dataActions = Reflux.createActions({
@@ -112,7 +112,37 @@ var BridgeMap = React.createClass({
           .filter((bridge) =>
             bridge.LATITUDE !== null && bridge.LONGITUDE !== null)
           .map((bridge) =>
-            <Marker key={bridge.ID} position={[bridge.LATITUDE, bridge.LONGITUDE]} />)}
+            <Circle
+              key={bridge.ID}
+              center={[bridge.LATITUDE, bridge.LONGITUDE]}
+              radius={bridge.DECK_LENGTH || 50}
+              color="tomato"
+              opacity={0.2}
+              weight={10}
+              fillColor="tomato"
+              fillOpacity={0.4}>
+              <Popup>
+                <div>
+                  <header>
+                    <h1>{bridge.STRUCTURE}</h1>
+                  </header>
+                  <div className="body">
+                    <ul>
+                      <li>id: {bridge.ID}</li>
+                      <li>{bridge.OPERATION_STATUS}</li>
+                      <li>{bridge.OWNER}</li>
+                      <li>{bridge.SUBCATEGORY_1}, {bridge.TYPE_1}, {bridge.MATERIAL_1}</li>
+                      <li>Built {bridge.YEAR_BUILT}</li>
+                      <li>Last inspected {bridge.LAST_INSPECTION_DATE || 'never'}</li>
+                      <li>Major rehab: {bridge.LAST_MAJOR_REHAB || 'never'}</li>
+                      <li>Minor rehab: {bridge.LAST_MINOR_REHAB || 'never'}</li>
+                      <li>Length: {bridge.DECK_LENGTH} ({bridge.NUMBER_OF_SPANS} spans)</li>
+                    </ul>
+                  </div>
+                </div>
+              </Popup>
+            </Circle>
+          )}
       </Map>
     );
   },
