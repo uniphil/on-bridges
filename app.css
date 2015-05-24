@@ -86,3 +86,7 @@ button.ok {
 button.ok:hover {
   background: hsla(220, 30%, 25%, 0.2);
 }
+
+.leaflet-container {
+  background: #444;
+}
