@@ -1,7 +1,7 @@
 var request = require('then-request');
 var Reflux = require('reflux');
 var React = require('react');
-var {Map, TileLayer} = require('react-leaflet');
+var {Map, TileLayer, Marker} = require('react-leaflet');
 
 
 var dataActions = Reflux.createActions({
@@ -50,10 +50,7 @@ dataActions.parse.failed.listen(() => notificationActions.queue(
 var bridges = Reflux.createStore({
   init() {
     this.data = [];
-    this.listenTo(dataActions.parse.completed, this.dataReady);
-  },
-  dataReady(data) {
-    console.log('loaded', data);
+    this.listenTo(dataActions.parse.completed, this.setData);
   },
   setData(newData) {
     this.data = newData;
@@ -106,11 +103,16 @@ var BridgeMap = React.createClass({
       '| &copy; <a href="http://cartodb.com/attributions">CartoDB</a> ' +
       '| <a href="http://www.ontario.ca/government/open-government-licence-ontario">Open Government Licence</a> &ndash; Ontario';
     return (
-      <Map center={[49.2867873, -84.7493416]} zoom={6}>
+      <Map center={[49.2867873, -84.7493416]} zoom={5}>
         <TileLayer
           url="http://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png"
           attribution={attribution}
         />
+        {this.props.bridges
+          .filter((bridge) =>
+            bridge.LATITUDE !== null && bridge.LONGITUDE !== null)
+          .map((bridge) =>
+            <Marker key={bridge.ID} position={[bridge.LATITUDE, bridge.LONGITUDE]} />)}
       </Map>
     );
   },
@@ -165,7 +167,7 @@ var App = React.createClass({
   render() {
     return (
       <div className="annoying-react-wrap">
-        <BridgeMap bridges={bridges} />
+        <BridgeMap bridges={this.state.bridges} />
         {this.state.notification &&
           <Notification {...this.state.notification}/>}
       </div>
