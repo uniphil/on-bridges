@@ -1,10 +1,72 @@
 html, body {
   margin: 0;
   height: 100%;
+  font-family: sans-serif;
 }
 
-#map-app, .leaflet-container {
+#map-app,
+.annoying-react-wrap,
+.leaflet-container {
   height: 100%;
   width: 100%;
 }
 
+.notification.overlay {
+  z-index: 10000;
+  display: flex;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  align-items: center;
+  background: hsla(0, 0%, 30%, 0.7);
+  -webkit-animation: fadein 1s ease-in;  /* fadein comes from index.html */
+       -o-animation: fadein 1s ease-in;
+          animation: fadein 1s ease-in;
+}
+
+.notification .content-wrap {
+  margin: 0 auto;
+  max-width: 500px;
+  box-shadow: 0 0 16px black;
+}
+
+.notification header {
+  display: flex;
+  justify-content: space-between;
+  color: #ccc;
+  background: hsla(220, 40%, 35%, 0.6);
+}
+
+.notification header h1 {
+  margin: 0;
+  font-size: 1.618em;
+  font-weight: normal;
+}
+
+.notification header button {
+  margin-left: 20px;
+  padding: 0;
+  width: 1.1em;
+  font-size: 1.618em;
+  color: #999;
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+
+.notification header button:hover {
+  color: #000;
+  background: hsla(220, 80%, 30%, 0.3);
+}
+
+.notification .body {
+  background: hsla(220, 40%, 86%, 0.75);
+}
+
+
+.notification header,
+.notification .body {
+  padding: 10px 16px;
+}

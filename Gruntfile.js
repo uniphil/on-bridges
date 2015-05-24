@@ -29,6 +29,9 @@ module.exports = function(grunt) {
         files: 'src/**/*.{js,jsx}',
         tasks: [ 'browserify' ],
       },
+      data: {
+        files: 'bridge-conditions-cleaned.json',
+      },
       options: {
         spawn: false,
         livereload: true,
