@@ -1,7 +1,26 @@
 var request = require('then-request');
 var Reflux = require('reflux');
-var React = require('react');
+var React = require('react/addons');
 var {Map, TileLayer, Circle, Popup} = require('react-leaflet');
+
+
+function sentenceCase(str) {
+  return str.slice(0, 1) + str.slice(1).toLowerCase();
+}
+
+
+function toStatusId(status) {
+  if (status === 'Open to traffic') {
+    return 'open';
+  } else if (status === 'Posted for load') {
+    return 'posted-load';
+  } else if (status === 'Pedestrians only') {
+    return 'pedestrians-only';
+  } else {
+    console.warn('unknown status', status);
+    return 'unknown';
+  }
+}
 
 
 var dataActions = Reflux.createActions({
@@ -12,6 +31,10 @@ var dataActions = Reflux.createActions({
 var notificationActions = Reflux.createActions({
   queue: {},
   pop: {},
+});
+
+var bridgeActions = Reflux.createActions({
+  showDetail: {},
 });
 
 dataActions.load.listen(() =>
@@ -65,6 +88,24 @@ var bridges = Reflux.createStore({
 });
 
 
+var detail = Reflux.createStore({
+  init() {
+    this.data = null;
+    this.listenTo(bridgeActions.showDetail, this.setData);
+  },
+  setData(detail) {
+    this.data = detail;
+    this.emit();
+  },
+  emit() {
+    this.trigger(this.data);
+  },
+  getInitialState() {
+    return this.data;
+  },
+});
+
+
 var notifications = Reflux.createStore({
   init() {
     this.data = [];
@@ -98,6 +139,7 @@ var notifications = Reflux.createStore({
 
 
 var BridgeMap = React.createClass({
+  mixins: [React.addons.PureRenderMixin],
   render() {
     var attribution = '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors ' +
       '| &copy; <a href="http://cartodb.com/attributions">CartoDB</a> ' +
@@ -120,32 +162,51 @@ var BridgeMap = React.createClass({
               opacity={0.2}
               weight={10}
               fillColor="tomato"
-              fillOpacity={0.4}>
-              <Popup>
-                <div>
-                  <header>
-                    <h1>{bridge.STRUCTURE}</h1>
-                  </header>
-                  <div className="body">
-                    <ul>
-                      <li>id: {bridge.ID}</li>
-                      <li>{bridge.OPERATION_STATUS}</li>
-                      <li>{bridge.OWNER}</li>
-                      <li>{bridge.SUBCATEGORY_1}, {bridge.TYPE_1}, {bridge.MATERIAL_1}</li>
-                      <li>Built {bridge.YEAR_BUILT}</li>
-                      <li>Last inspected {bridge.LAST_INSPECTION_DATE || 'never'}</li>
-                      <li>Major rehab: {bridge.LAST_MAJOR_REHAB || 'never'}</li>
-                      <li>Minor rehab: {bridge.LAST_MINOR_REHAB || 'never'}</li>
-                      <li>Length: {bridge.DECK_LENGTH} ({bridge.NUMBER_OF_SPANS} spans)</li>
-                    </ul>
-                  </div>
-                </div>
-              </Popup>
-            </Circle>
+              fillOpacity={0.4}
+              onMouseOver={() => bridgeActions.showDetail(bridge)}
+            />
           )}
       </Map>
     );
   },
+});
+
+
+var BridgeDetail = React.createClass({
+  render() {
+    var name = this.props.STRUCTURE ? sentenceCase(this.props.STRUCTURE) : null,
+        status = this.props.OPERATION_STATUS,
+        statusId = toStatusId(status);
+    return (
+      <div className="bridge-detail">
+        <div className="detail basic">
+          <p className="id">{this.props.ID}</p>
+          <h1>{name}</h1>
+          <p className={'status ' + statusId}>{status || 'unknown status'}</p>
+          <p className="span">
+            {this.props.DECK_LENGTH}m ({this.props.NUMBER_OF_SPANS} spans)
+          </p>
+        </div>
+        <div className="detail type">
+          <p className="specific-type">{this.props.TYPE_1}</p>
+          <h1>{this.props.SUBCATEGORY_1}</h1>
+          <p className="material">{this.props.MATERIAL_1}</p>
+        </div>
+        <div className="detail time">
+          <dl>
+            <dt>Built</dt>
+            <dd>{this.props.YEAR_BUILT || 'unknown'}</dd>
+            <dt>Last Major Rehab</dt>
+            <dd>{this.props.LAST_MAJOR_REHAB || 'never'}</dd>
+            <dt>Last Minor Rehab</dt>
+            <dd>{this.props.LAST_MINOR_REHAB || 'never'}</dd>
+            <dt>Last Inspection Date</dt>
+            <dd>{this.props.LAST_INSPECTION_DATE || 'never'}</dd>
+          </dl>
+        </div>
+      </div>
+    );
+  }
 });
 
 
@@ -190,6 +251,7 @@ var App = React.createClass({
   mixins: [
     Reflux.connect(notifications, 'notification'),
     Reflux.connect(bridges, 'bridges'),
+    Reflux.connect(detail, 'detail'),
   ],
   componentWillMount() {
     dataActions.load();
@@ -198,8 +260,9 @@ var App = React.createClass({
     return (
       <div className="annoying-react-wrap">
         <BridgeMap bridges={this.state.bridges} />
+        <BridgeDetail {...this.state.detail} />
         {this.state.notification &&
-          <Notification {...this.state.notification}/>}
+          <Notification {...this.state.notification} />}
       </div>
     );
   },

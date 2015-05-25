@@ -39,12 +39,6 @@ html, body {
   background: hsla(220, 40%, 35%, 0.6);
 }
 
-.notification header h1 {
-  margin: 0;
-  font-size: 1.618em;
-  font-weight: normal;
-}
-
 .notification header button {
   margin-left: 20px;
   padding: 0;
@@ -69,6 +63,14 @@ html, body {
   padding: 10px 16px;
 }
 
+
+h1 {
+  margin: 0;
+  font-size: 1.618em;
+  font-weight: normal;
+}
+
+
 button {
   padding: 8px 14px;
   font-size: 1em;
@@ -86,6 +88,7 @@ button.ok {
 button.ok:hover {
   background: hsla(220, 30%, 25%, 0.2);
 }
+
 
 .leaflet-container {
   background: #444;
@@ -110,8 +113,55 @@ button.ok:hover {
   padding: 10px 16px;
 }
 
-.leaflet-popup header h1 {
+
+.bridge-detail {
+  display: flex;
+  z-index: 10000;
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  background: hsla(0, 0%, 16%, 0.75);
+  justify-content: space-between;
+}
+
+.bridge-detail .detail {
+  margin: 10px 16px;
+}
+
+.bridge-detail .detail.basic {
+  /*max-width: 360px;*/
+}
+
+.bridge-detail .id {
+  color: #999;
+}
+
+.bridge-detail h1 {
+  margin: 8px 0;
+}
+
+.bridge-detail .status.open {
+  color: greenyellow;
+}
+.bridge-detail .status.posted-load,
+.bridge-detail .status.pedestrians-only {
+  color: darkorange;
+}
+.bridge-detail .status.unknown {
+  color: tomato;
+}
+
+.bridge-detail .span {
+  margin: 8px 0;
+  font-size: 1.333em;
+}
+
+.bridge-detail .specific-type {
+  color: #999;
+}
+
+
+.bridge-detail p {
   margin: 0;
-  font-size: 1.618em;
-  font-weight: normal;
 }
