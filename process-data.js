@@ -74,6 +74,17 @@ function fixKeys(rows) {
 }
 
 
+/**
+ * remove trailing /
+ */
+function fixIds(rows) {
+  return Ok(rows.map((row) => {
+    row.ID = row.ID.replace('/', '');
+    return row;
+  }));
+}
+
+
 function convertTypes(conversions) {
   return function(rows) {
     var converted;
@@ -198,6 +209,7 @@ read('2536_bridge_conditions.csv')
   .andThen(trimTrailingNewline)
   .andThen(parseCSV)
   .andThen(fixKeys)
+  .andThen(fixIds)
   .andThen(convertTypes(typeConversions))
   .andThen(nestBCI)
   .andThen(toJSON)
