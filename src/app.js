@@ -238,7 +238,12 @@ var Event = React.createClass({
 var BridgeDetail = React.createClass({
   render() {
     if (!this.props.ID) {
-      return <span style={{display: 'none'}}></span>
+      return (
+        <div className="bridge-detail hints">
+          <p className="hint">Roll over markers to see details</p>
+          <p className="hint">Scroll to zoom in</p>
+        </div>
+      );
     }
 
     var name = this.props.STRUCTURE ? sentenceCase(this.props.STRUCTURE) : null,

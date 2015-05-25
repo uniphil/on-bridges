@@ -37935,7 +37935,12 @@ var Event = React.createClass({displayName: "Event",
 var BridgeDetail = React.createClass({displayName: "BridgeDetail",
   render:function() {
     if (!this.props.ID) {
-      return React.createElement("span", {style: {display: 'none'}})
+      return (
+        React.createElement("div", {className: "bridge-detail hints"}, 
+          React.createElement("p", {className: "hint"}, "Roll over markers to see details"), 
+          React.createElement("p", {className: "hint"}, "Scroll to zoom in")
+        )
+      );
     }
 
     var name = this.props.STRUCTURE ? sentenceCase(this.props.STRUCTURE) : null,

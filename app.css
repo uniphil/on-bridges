@@ -126,6 +126,15 @@ button.ok:hover {
   background: hsla(0, 0%, 16%, 0.75);
   justify-content: space-between;
 }
+.bridge-detail.hints {
+  flex-direction: column;
+  height: auto;
+  padding: 8px;
+}
+
+.bridge-detail .hint {
+  margin: 8px auto;
+}
 
 .bridge-detail .detail {
   margin: 10px 16px;
