@@ -225,7 +225,8 @@ var Event = React.createClass({
     return (
       <div style={{position: 'relative'}}>
         {this.props.children}
-        <span className="event" style={eventPosition}></span>
+        {this.props.value &&
+          <span className="event" style={eventPosition}></span>}
         <span className="value" style={valuePosition}>
           {this.props.value}
         </span>

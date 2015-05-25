@@ -37922,7 +37922,8 @@ var Event = React.createClass({displayName: "Event",
     return (
       React.createElement("div", {style: {position: 'relative'}}, 
         this.props.children, 
-        React.createElement("span", {className: "event", style: eventPosition}), 
+        this.props.value &&
+          React.createElement("span", {className: "event", style: eventPosition}), 
         React.createElement("span", {className: "value", style: valuePosition}, 
           this.props.value
         )
