@@ -200,6 +200,7 @@ var typeConversions = (() => {
     NUMBER_OF_SPANS: parseInt,
     DECK_LENGTH   : parseFloat,
     WIDTH_TOTAL   : parseFloat,
+    SUBCATEGORY_1 : (v) => v === 'Other Bridge' ? 'Other' : v,
   }
 })();
 
