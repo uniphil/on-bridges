@@ -37842,7 +37842,7 @@ var BridgeMap = React.createClass({displayName: "BridgeMap",
       '| &copy; <a href="http://cartodb.com/attributions">CartoDB</a> ' +
       '| <a href="http://www.ontario.ca/government/open-government-licence-ontario">Open Government Licence</a> &ndash; Ontario';
     return (
-      React.createElement(Map, {center: [49.2867873, -84.7493416], zoom: 5}, 
+      React.createElement(Map, {center: [49.2867873, -84.7493416], zoom: 5, zoomControl: false}, 
         React.createElement(TileLayer, {
           url: "http://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png", 
           attribution: attribution}
