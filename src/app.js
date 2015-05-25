@@ -172,37 +172,112 @@ var BridgeMap = React.createClass({
 });
 
 
+var Timeline = React.createClass({
+  render() {
+    var width = (this.props.range[1] - this.props.range[0]) * this.props.scale,
+        labelSpace = 100,
+        valueSpace = 55;
+    var timelineStyle = {
+      width: labelSpace + width,
+      position: 'relative',
+      marginRight: valueSpace,
+    };
+    var bgStyle = {
+      boxSizing: 'border-box',
+      position: 'absolute',
+      left: labelSpace,
+      width: width,
+      height: '100%',
+      border: '1px dotted #666',
+      borderWidth: '0 1px',
+      background: 'hsla(0, 0%, 0%, 0.2)',
+    };
+    var children = React.Children.map(this.props.children, (child) =>
+      React.cloneElement(child, {
+        scale: this.props.scale,
+        range: this.props.range,
+        labelSpace: labelSpace}));
+    return (
+      <div className="timeline" style={timelineStyle}>
+        <div className="timeline-bg" style={bgStyle}></div>
+        {children}
+      </div>
+    );
+  },
+});
+
+
+var Event = React.createClass({
+  render() {
+    var eventPosition = {
+      position: 'absolute',
+      left: this.props.labelSpace +
+        (this.props.value - 0.5 - this.props.range[0]) * this.props.scale,
+      width: 1,
+      height: '100%',
+      background: 'blueviolet',
+    };
+    var valuePosition = {
+      position: 'absolute',
+      left: this.props.labelSpace + 6 +
+        (this.props.range[1] - this.props.range[0]) * this.props.scale,
+    };
+    return (
+      <div style={{position: 'relative'}}>
+        {this.props.children}
+        <span className="event" style={eventPosition}></span>
+        <span className="value" style={valuePosition}>
+          {this.props.value}
+        </span>
+      </div>
+    );
+  },
+});
+
+
 var BridgeDetail = React.createClass({
   render() {
+    if (!this.props.ID) {
+      return <span style={{display: 'none'}}></span>
+    }
+
     var name = this.props.STRUCTURE ? sentenceCase(this.props.STRUCTURE) : null,
         status = this.props.OPERATION_STATUS,
-        statusId = toStatusId(status);
+        statusId = toStatusId(status),
+        inspectionYear = this.props.LAST_INSPECTION_DATE ?
+          parseInt(this.props.LAST_INSPECTION_DATE.split('/').pop()) :
+          null;
+
     return (
       <div className="bridge-detail">
         <div className="detail basic">
-          <p className="id">{this.props.ID}</p>
           <h1>{name}</h1>
-          <p className={'status ' + statusId}>{status || 'unknown status'}</p>
+          <p>
+            <span className="id">{this.props.ID} </span>
+            <span className={'status ' + statusId}>{status || 'unknown status'}</span>
+          </p>
           <p className="span">
             {this.props.DECK_LENGTH}m ({this.props.NUMBER_OF_SPANS} spans)
           </p>
         </div>
         <div className="detail type">
-          <p className="specific-type">{this.props.TYPE_1}</p>
           <h1>{this.props.SUBCATEGORY_1}</h1>
+          <p className="specific-type">{this.props.TYPE_1}</p>
           <p className="material">{this.props.MATERIAL_1}</p>
         </div>
         <div className="detail time">
-          <dl>
-            <dt>Built</dt>
-            <dd>{this.props.YEAR_BUILT || 'unknown'}</dd>
-            <dt>Last Major Rehab</dt>
-            <dd>{this.props.LAST_MAJOR_REHAB || 'never'}</dd>
-            <dt>Last Minor Rehab</dt>
-            <dd>{this.props.LAST_MINOR_REHAB || 'never'}</dd>
-            <dt>Last Inspection Date</dt>
-            <dd>{this.props.LAST_INSPECTION_DATE || 'never'}</dd>
-          </dl>
+          <h1>Timeline</h1>
+          <Timeline range={[1900, 2014]} scale={0.75}>
+            <Event value={this.props.YEAR_BUILT} empty="unknown">
+              Built
+            </Event>
+            <Event value={this.props.LAST_MAJOR_REHAB} empty="never">
+              Major rehab
+            </Event>
+            <Event value={inspectionYear} empty="never">
+              Inspected
+            </Event>
+          </Timeline>
         </div>
       </div>
     );

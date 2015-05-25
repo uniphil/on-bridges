@@ -121,6 +121,8 @@ button.ok:hover {
   left: 0;
   bottom: 0;
   width: 100%;
+  height: 150px;
+  overflow-y: auto;
   background: hsla(0, 0%, 16%, 0.75);
   justify-content: space-between;
 }
@@ -152,7 +154,8 @@ button.ok:hover {
   color: tomato;
 }
 
-.bridge-detail .span {
+.bridge-detail .span,
+.bridge-detail .material {
   margin: 8px 0;
   font-size: 1.333em;
 }
@@ -160,7 +163,6 @@ button.ok:hover {
 .bridge-detail .specific-type {
   color: #999;
 }
-
 
 .bridge-detail p {
   margin: 0;
