@@ -114,9 +114,18 @@ button.ok:hover {
 }
 
 
+.leaflet-container .leaflet-control-attribution {
+  background: none;
+  color: #ccc;
+}
+.leaflet-container .leaflet-control-attribution a {
+  color: #6cc;
+}
+
+
 .bridge-detail {
   display: flex;
-  z-index: 10000;
+  z-index: 500;
   position: absolute;
   left: 0;
   bottom: 0;
