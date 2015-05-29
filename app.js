@@ -37720,16 +37720,17 @@ function toStatusId(status) {
 }
 
 
-categoryColourMap = {  // colorbrewer!
+var categoryColourMap = {  // colorbrewer!
   'Beam/Girder' : '#66c2a5',
   'Slab'        : '#fc8d62',
   'Frame'       : '#8da0cb',
-  'Truss'       : '#e78ac3',
-  'Arch'        : '#a6d854',
-  'Moveable Bridge': '#ffd92f',
-  'Other'       : '#e5c494',
-  'Temporary Modular': '#b3b3b3',
+  'Temporary Modular': '#e78ac3',
+  'Truss'       : '#a6d854',
+  'Arch'        : '#ffd92f',
+  'Moveable Bridge': '#e5c494',
+  'Other'       : '#b3b3b3',
 };
+var categories = Object.keys(categoryColourMap);  // for consistent ordering
 
 
 var dataActions = Reflux.createActions({
@@ -37801,6 +37802,37 @@ var bridges = Reflux.createStore({
   init:function() {
     this.data = [];
     this.listenTo(dataActions.parse.completed, this.setData);
+  },
+});
+
+
+var filteredBridges = Reflux.createStore({
+  mixins: [DataMixin],
+  init:function() {
+    this.data = [];
+    this.listenTo(bridges, this.setData, this.setData);
+  },
+});
+
+
+var bridgeStats = Reflux.createStore({
+  mixins: [DataMixin],
+  init:function() {
+    this.data = {};
+    this.listenTo(filteredBridges, this.computeStats, this.computeStats);
+  },
+  computeStats:function(bridges) {
+    var categoryCounts = bridges.reduce(function(counts, bridge)  {
+      if (counts[bridge.SUBCATEGORY_1] === undefined) {
+        counts[bridge.SUBCATEGORY_1] = 0;
+      }
+      counts[bridge.SUBCATEGORY_1] += 1;
+      return counts;
+    }, {});
+    this.setData({
+      categoryCounts:categoryCounts,
+      total: bridges.length,
+    });
   },
 });
 
@@ -37983,11 +38015,27 @@ var Event = React.createClass({displayName: "Event",
 });
 
 
+var CategoriesChart = React.createClass({displayName: "CategoriesChart",
+  render:function() {
+    return (
+      React.createElement("ul", {className: "unlist category-chart"}, 
+        categories.map(function(cat) 
+          {return React.createElement("li", {key: cat, style: {width: this.props.categoryCounts[cat] / this.props.total * 100 + '%'}}, 
+            React.createElement("span", {className: "bg", style: {backgroundColor: categoryColourMap[cat]}}), 
+            this.props.categoryCounts[cat]
+          );}.bind(this)
+        )
+      )
+    );
+  }
+});
+
+
 var Legend = React.createClass({displayName: "Legend",
   render:function() {
     return (
-      React.createElement("ul", {className: "legend"}, 
-        Object.keys(categoryColourMap).map(function(k) 
+      React.createElement("ul", {className: "unlist legend"}, 
+        categories.map(function(k) 
           {return React.createElement("li", {key: k, style: {color: categoryColourMap[k]}}, k);}
         )
       )
@@ -38095,6 +38143,7 @@ var App = React.createClass({displayName: "App",
     Reflux.connect(notifications, 'notification'),
     Reflux.connect(bridges, 'bridges'),
     Reflux.connect(detail, 'detail'),
+    Reflux.connect(bridgeStats, 'stats'),
   ],
   componentWillMount:function() {
     dataActions.load();
@@ -38103,7 +38152,10 @@ var App = React.createClass({displayName: "App",
     return (
       React.createElement("div", {className: "annoying-react-wrap"}, 
         React.createElement(BridgeMap, {bridges: this.state.bridges}), 
-        React.createElement(Legend, null), 
+        React.createElement("div", {className: "aggregates"}, 
+          React.createElement(CategoriesChart, React.__spread({},  this.state.stats)), 
+          React.createElement(Legend, null)
+        ), 
         React.createElement(BridgeDetail, React.__spread({},  this.state.detail)), 
         this.state.notification &&
           React.createElement(Notification, React.__spread({},  this.state.notification))

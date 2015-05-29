@@ -23,16 +23,17 @@ function toStatusId(status) {
 }
 
 
-categoryColourMap = {  // colorbrewer!
+var categoryColourMap = {  // colorbrewer!
   'Beam/Girder' : '#66c2a5',
   'Slab'        : '#fc8d62',
   'Frame'       : '#8da0cb',
-  'Truss'       : '#e78ac3',
-  'Arch'        : '#a6d854',
-  'Moveable Bridge': '#ffd92f',
-  'Other'       : '#e5c494',
-  'Temporary Modular': '#b3b3b3',
+  'Temporary Modular': '#e78ac3',
+  'Truss'       : '#a6d854',
+  'Arch'        : '#ffd92f',
+  'Moveable Bridge': '#e5c494',
+  'Other'       : '#b3b3b3',
 };
+var categories = Object.keys(categoryColourMap);  // for consistent ordering
 
 
 var dataActions = Reflux.createActions({
@@ -104,6 +105,37 @@ var bridges = Reflux.createStore({
   init() {
     this.data = [];
     this.listenTo(dataActions.parse.completed, this.setData);
+  },
+});
+
+
+var filteredBridges = Reflux.createStore({
+  mixins: [DataMixin],
+  init() {
+    this.data = [];
+    this.listenTo(bridges, this.setData, this.setData);
+  },
+});
+
+
+var bridgeStats = Reflux.createStore({
+  mixins: [DataMixin],
+  init() {
+    this.data = {};
+    this.listenTo(filteredBridges, this.computeStats, this.computeStats);
+  },
+  computeStats(bridges) {
+    var categoryCounts = bridges.reduce((counts, bridge) => {
+      if (counts[bridge.SUBCATEGORY_1] === undefined) {
+        counts[bridge.SUBCATEGORY_1] = 0;
+      }
+      counts[bridge.SUBCATEGORY_1] += 1;
+      return counts;
+    }, {});
+    this.setData({
+      categoryCounts,
+      total: bridges.length,
+    });
   },
 });
 
@@ -286,11 +318,27 @@ var Event = React.createClass({
 });
 
 
+var CategoriesChart = React.createClass({
+  render() {
+    return (
+      <ul className="unlist category-chart">
+        {categories.map((cat) =>
+          <li key={cat} style={{width: this.props.categoryCounts[cat] / this.props.total * 100 + '%'}}>
+            <span className="bg" style={{backgroundColor: categoryColourMap[cat]}}></span>
+            {this.props.categoryCounts[cat]}
+          </li>
+        )}
+      </ul>
+    );
+  }
+});
+
+
 var Legend = React.createClass({
   render() {
     return (
-      <ul className="legend">
-        {Object.keys(categoryColourMap).map((k) =>
+      <ul className="unlist legend">
+        {categories.map((k) =>
           <li key={k} style={{color: categoryColourMap[k]}}>{k}</li>
         )}
       </ul>
@@ -398,6 +446,7 @@ var App = React.createClass({
     Reflux.connect(notifications, 'notification'),
     Reflux.connect(bridges, 'bridges'),
     Reflux.connect(detail, 'detail'),
+    Reflux.connect(bridgeStats, 'stats'),
   ],
   componentWillMount() {
     dataActions.load();
@@ -406,7 +455,10 @@ var App = React.createClass({
     return (
       <div className="annoying-react-wrap">
         <BridgeMap bridges={this.state.bridges} />
-        <Legend/>
+        <div className="aggregates">
+          <CategoriesChart {...this.state.stats} />
+          <Legend />
+        </div>
         <BridgeDetail {...this.state.detail} />
         {this.state.notification &&
           <Notification {...this.state.notification} />}

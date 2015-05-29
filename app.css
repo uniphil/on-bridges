@@ -192,19 +192,45 @@ button.ok:hover {
   stroke-opacity: 0.4;
 }
 
-.legend {
+
+
+
+ul.unlist,
+ul.unlist > li {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+
+.aggregates {
   position: absolute;
   top: 0;
   width: 100%;
   background: hsla(0, 0%, 0%, 0.5);
   text-align: center;
 }
-ul.legend,
-ul.legend li {
-  margin: 0;
-  padding: 0;
+
+ul.category-chart {
+  width: 100%;
+  height: 16px;
 }
+ul.category-chart li {
+  position: relative;
+  display: block;
+  float: left;
+}
+ul.category-chart li .bg {
+  position: absolute;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  opacity: 0.6;
+}
+
+
 ul.legend li {
+  clar: left;
   display: inline-block;
   margin-left: 21px;
 }
