@@ -182,3 +182,25 @@ button.ok:hover {
   stroke: white;
   stroke-opacity: 0.4;
 }
+
+.legend {
+  position: absolute;
+  top: 0;
+  width: 100%;
+  background: hsla(0, 0%, 0%, 0.5);
+  text-align: center;
+}
+ul.legend,
+ul.legend li {
+  margin: 0;
+  padding: 0;
+}
+ul.legend li {
+  display: inline-block;
+  margin-left: 21px;
+}
+ul.legend li:before {
+  content: "● ";
+  font-size: 1.5em;
+  opacity: 0.6;
+}

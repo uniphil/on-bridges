@@ -24,14 +24,14 @@ function toStatusId(status) {
 
 
 categoryColourMap = {  // colorbrewer!
-  'Beam/Girder' : '#8dd3c7',
-  'Slab'        : '#ffffb3',
-  'Frame'       : '#bebada',
-  'Truss'       : '#fb8072',
-  'Arch'        : '#80b1d3',
-  'Moveable Bridge': '#fdb462',
-  'Other'       : '#b3de69',
-  'Temporary Modular': '#fccde5',
+  'Beam/Girder' : '#66c2a5',
+  'Slab'        : '#fc8d62',
+  'Frame'       : '#8da0cb',
+  'Truss'       : '#e78ac3',
+  'Arch'        : '#a6d854',
+  'Moveable Bridge': '#ffd92f',
+  'Other'       : '#e5c494',
+  'Temporary Modular': '#b3b3b3',
 };
 
 
@@ -222,7 +222,7 @@ var BridgeMap = React.createClass({
               opacity={0}
               weight={16}
               fillColor={categoryColourMap[bridge.SUBCATEGORY_1]}
-              fillOpacity={0.4}
+              fillOpacity={0.6}
               onMouseOver={this.getShowDetail(bridge)}
             />
           })}
@@ -293,6 +293,19 @@ var Event = React.createClass({
       </div>
     );
   },
+});
+
+
+var Legend = React.createClass({
+  render() {
+    return (
+      <ul className="legend">
+        {Object.keys(categoryColourMap).map((k) =>
+          <li key={k} style={{color: categoryColourMap[k]}}>{k}</li>
+        )}
+      </ul>
+    );
+  }
 });
 
 
@@ -403,6 +416,7 @@ var App = React.createClass({
     return (
       <div className="annoying-react-wrap">
         <BridgeMap bridges={this.state.bridges} />
+        <Legend/>
         <BridgeDetail {...this.state.detail} />
         {this.state.notification &&
           <Notification {...this.state.notification} />}

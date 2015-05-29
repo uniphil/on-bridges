@@ -37721,14 +37721,14 @@ function toStatusId(status) {
 
 
 categoryColourMap = {  // colorbrewer!
-  'Beam/Girder' : '#8dd3c7',
-  'Slab'        : '#ffffb3',
-  'Frame'       : '#bebada',
-  'Truss'       : '#fb8072',
-  'Arch'        : '#80b1d3',
-  'Moveable Bridge': '#fdb462',
-  'Other'       : '#b3de69',
-  'Temporary Modular': '#fccde5',
+  'Beam/Girder' : '#66c2a5',
+  'Slab'        : '#fc8d62',
+  'Frame'       : '#8da0cb',
+  'Truss'       : '#e78ac3',
+  'Arch'        : '#a6d854',
+  'Moveable Bridge': '#ffd92f',
+  'Other'       : '#e5c494',
+  'Temporary Modular': '#b3b3b3',
 };
 
 
@@ -37919,7 +37919,7 @@ var BridgeMap = React.createClass({displayName: "BridgeMap",
               opacity: 0, 
               weight: 16, 
               fillColor: categoryColourMap[bridge.SUBCATEGORY_1], 
-              fillOpacity: 0.4, 
+              fillOpacity: 0.6, 
               onMouseOver: this.getShowDetail(bridge)}
             )
           }.bind(this))
@@ -37990,6 +37990,19 @@ var Event = React.createClass({displayName: "Event",
       )
     );
   },
+});
+
+
+var Legend = React.createClass({displayName: "Legend",
+  render:function() {
+    return (
+      React.createElement("ul", {className: "legend"}, 
+        Object.keys(categoryColourMap).map(function(k) 
+          {return React.createElement("li", {key: k, style: {color: categoryColourMap[k]}}, k);}
+        )
+      )
+    );
+  }
 });
 
 
@@ -38100,6 +38113,7 @@ var App = React.createClass({displayName: "App",
     return (
       React.createElement("div", {className: "annoying-react-wrap"}, 
         React.createElement(BridgeMap, {bridges: this.state.bridges}), 
+        React.createElement(Legend, null), 
         React.createElement(BridgeDetail, React.__spread({},  this.state.detail)), 
         this.state.notification &&
           React.createElement(Notification, React.__spread({},  this.state.notification))
