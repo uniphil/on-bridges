@@ -82,43 +82,43 @@ dataActions.parse.failed.listen(() => notificationActions.queue(
   'this issue.'));
 
 
-var bridges = Reflux.createStore({
-  init() {
-    this.data = [];
-    this.listenTo(dataActions.parse.completed, this.setData);
-  },
+var DataMixin = {
   setData(newData) {
     this.data = newData;
     this.emit();
   },
+  get() {
+    return this.data;
+  },
   emit() {
-    this.trigger(this.data);
+    this.trigger(this.get());
   },
   getInitialState() {
-    return this.data;
+    return this.get();
+  },
+};
+
+
+var bridges = Reflux.createStore({
+  mixins: [DataMixin],
+  init() {
+    this.data = [];
+    this.listenTo(dataActions.parse.completed, this.setData);
   },
 });
 
 
 var detail = Reflux.createStore({
+  mixins: [DataMixin],
   init() {
     this.data = null;
     this.listenTo(bridgeActions.showDetail, this.setData);
-  },
-  setData(detail) {
-    this.data = detail;
-    this.emit();
-  },
-  emit() {
-    this.trigger(this.data);
-  },
-  getInitialState() {
-    return this.data;
   },
 });
 
 
 var notifications = Reflux.createStore({
+  mixins: [DataMixin],
   init() {
     this.data = [];
     this.listenTo(notificationActions.queue, this.queue);
@@ -134,18 +134,8 @@ var notifications = Reflux.createStore({
     newQueue.pop();
     this.setData(newQueue);
   },
-  setData(newData) {
-    this.data = newData;
-    this.emit();
-  },
   get() {
     return this.data[this.data.length - 1];  // last or undefined
-  },
-  emit() {
-    this.trigger(this.get());
-  },
-  getInitialState() {
-    return this.get();
   },
 });
 

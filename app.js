@@ -37779,43 +37779,43 @@ dataActions.parse.failed.listen(function()  {return notificationActions.queue(
   'this issue.');});
 
 
-var bridges = Reflux.createStore({
-  init:function() {
-    this.data = [];
-    this.listenTo(dataActions.parse.completed, this.setData);
-  },
+var DataMixin = {
   setData:function(newData) {
     this.data = newData;
     this.emit();
   },
+  get:function() {
+    return this.data;
+  },
   emit:function() {
-    this.trigger(this.data);
+    this.trigger(this.get());
   },
   getInitialState:function() {
-    return this.data;
+    return this.get();
+  },
+};
+
+
+var bridges = Reflux.createStore({
+  mixins: [DataMixin],
+  init:function() {
+    this.data = [];
+    this.listenTo(dataActions.parse.completed, this.setData);
   },
 });
 
 
 var detail = Reflux.createStore({
+  mixins: [DataMixin],
   init:function() {
     this.data = null;
     this.listenTo(bridgeActions.showDetail, this.setData);
-  },
-  setData:function(detail) {
-    this.data = detail;
-    this.emit();
-  },
-  emit:function() {
-    this.trigger(this.data);
-  },
-  getInitialState:function() {
-    return this.data;
   },
 });
 
 
 var notifications = Reflux.createStore({
+  mixins: [DataMixin],
   init:function() {
     this.data = [];
     this.listenTo(notificationActions.queue, this.queue);
@@ -37831,18 +37831,8 @@ var notifications = Reflux.createStore({
     newQueue.pop();
     this.setData(newQueue);
   },
-  setData:function(newData) {
-    this.data = newData;
-    this.emit();
-  },
   get:function() {
     return this.data[this.data.length - 1];  // last or undefined
-  },
-  emit:function() {
-    this.trigger(this.get());
-  },
-  getInitialState:function() {
-    return this.get();
   },
 });
 
