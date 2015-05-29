@@ -37837,6 +37837,23 @@ var notifications = Reflux.createStore({
 
 var BridgeMap = React.createClass({displayName: "BridgeMap",
   mixins: [React.addons.PureRenderMixin],
+  componentWillMount:function() {
+    this._showing = null;
+  },
+  getPath:function(bridgeId) {
+    return this.refs[bridgeId].getLeafletElement()._path;
+  },
+  getShowDetail:function(bridge) {
+    var self = this;
+    return function(e) {
+      bridgeActions.showDetail(bridge);
+      if (self._showing !== null) {
+        self.getPath(self._showing).classList.remove('detail');
+      }
+      self._showing = bridge.ID;
+      self.getPath(self._showing).classList.add('detail');
+    }
+  },
   render:function() {
     var attribution = '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors ' +
       '| &copy; <a href="http://cartodb.com/attributions">CartoDB</a> ' +
@@ -37853,6 +37870,7 @@ var BridgeMap = React.createClass({displayName: "BridgeMap",
           .map(function(bridge) 
             {return React.createElement(Circle, {
               key: bridge.ID, 
+              ref: bridge.ID, 
               center: [bridge.LATITUDE, bridge.LONGITUDE], 
               radius: bridge.DECK_LENGTH || 50, 
               color: "tomato", 
@@ -37860,8 +37878,8 @@ var BridgeMap = React.createClass({displayName: "BridgeMap",
               weight: 16, 
               fillColor: "tomato", 
               fillOpacity: 0.4, 
-              onMouseOver: function()  {return bridgeActions.showDetail(bridge);}}
-            );}
+              onMouseOver: this.getShowDetail(bridge)}
+            );}.bind(this)
           )
       )
     );

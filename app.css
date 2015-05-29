@@ -176,3 +176,11 @@ button.ok:hover {
 .bridge-detail p {
   margin: 0;
 }
+
+
+.detail {
+  fill: white;
+  fill-opacity: 0.7;
+  stroke: white;
+  stroke-opacity: 0.4;
+}

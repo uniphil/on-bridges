@@ -140,6 +140,23 @@ var notifications = Reflux.createStore({
 
 var BridgeMap = React.createClass({
   mixins: [React.addons.PureRenderMixin],
+  componentWillMount() {
+    this._showing = null;
+  },
+  getPath(bridgeId) {
+    return this.refs[bridgeId].getLeafletElement()._path;
+  },
+  getShowDetail(bridge) {
+    var self = this;
+    return function(e) {
+      bridgeActions.showDetail(bridge);
+      if (self._showing !== null) {
+        self.getPath(self._showing).classList.remove('detail');
+      }
+      self._showing = bridge.ID;
+      self.getPath(self._showing).classList.add('detail');
+    }
+  },
   render() {
     var attribution = '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors ' +
       '| &copy; <a href="http://cartodb.com/attributions">CartoDB</a> ' +
@@ -156,6 +173,7 @@ var BridgeMap = React.createClass({
           .map((bridge) =>
             <Circle
               key={bridge.ID}
+              ref={bridge.ID}
               center={[bridge.LATITUDE, bridge.LONGITUDE]}
               radius={bridge.DECK_LENGTH || 50}
               color="tomato"
@@ -163,7 +181,7 @@ var BridgeMap = React.createClass({
               weight={16}
               fillColor="tomato"
               fillOpacity={0.4}
-              onMouseOver={() => bridgeActions.showDetail(bridge)}
+              onMouseOver={this.getShowDetail(bridge)}
             />
           )}
       </Map>
