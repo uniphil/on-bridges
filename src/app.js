@@ -159,8 +159,8 @@ var BridgeMap = React.createClass({
               center={[bridge.LATITUDE, bridge.LONGITUDE]}
               radius={bridge.DECK_LENGTH || 50}
               color="tomato"
-              opacity={0.2}
-              weight={10}
+              opacity={0}
+              weight={16}
               fillColor="tomato"
               fillOpacity={0.4}
               onMouseOver={() => bridgeActions.showDetail(bridge)}
