@@ -37849,8 +37849,29 @@ var notifications = Reflux.createStore({
 
 var BridgeMap = React.createClass({displayName: "BridgeMap",
   mixins: [React.addons.PureRenderMixin],
+  getInitialState:function() {
+    return {
+      dots: 'big',
+    };
+  },
   componentWillMount:function() {
     this._showing = null;
+  },
+  onZoom:function(e) {
+    var z = e.target.getZoom(),
+        shouldBe;
+    if (z < 9) {
+      shouldBe = 'big';
+    } else if (z < 12) {
+      shouldBe = 'med';
+    } else if (z < 14) {
+      shouldBe = 'small';
+    } else {
+      shouldBe = 'real';
+    }
+    if (shouldBe !== this.state.dots) {
+      this.setState({dots: shouldBe});
+    }
   },
   getPath:function(bridgeId) {
     return this.refs[bridgeId].getLeafletElement()._path;
@@ -37871,7 +37892,11 @@ var BridgeMap = React.createClass({displayName: "BridgeMap",
       '| &copy; <a href="http://cartodb.com/attributions">CartoDB</a> ' +
       '| <a href="http://www.ontario.ca/government/open-government-licence-ontario">Open Government Licence</a> &ndash; Ontario';
     return (
-      React.createElement(Map, {center: [49.2867873, -84.7493416], zoom: 5, zoomControl: false}, 
+      React.createElement(Map, {
+        center: [49.2867873, -84.7493416], 
+        zoom: 5, 
+        zoomControl: false, 
+        onLeafletZoomend: this.onZoom}, 
         React.createElement(TileLayer, {
           url: "http://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png", 
           attribution: attribution}
@@ -37879,20 +37904,25 @@ var BridgeMap = React.createClass({displayName: "BridgeMap",
         this.props.bridges
           .filter(function(bridge) 
             {return bridge.LATITUDE !== null && bridge.LONGITUDE !== null;})
-          .map(function(bridge) 
-            {return React.createElement(Circle, {
+          .map(function(bridge)  {
+            var sizeBump = this.state.dots === 'big' ?
+                  1000 : this.state.dots === 'med' ?
+                  300 : this.state.dots === 'small' ?
+                  75 : 0,
+                radius = (bridge.DECK_LENGTH || 50) + sizeBump;
+            return React.createElement(Circle, {
               key: bridge.ID, 
               ref: bridge.ID, 
               center: [bridge.LATITUDE, bridge.LONGITUDE], 
-              radius: bridge.DECK_LENGTH || 50, 
+              radius: radius, 
               color: "tomato", 
               opacity: 0, 
               weight: 16, 
               fillColor: categoryColourMap[bridge.SUBCATEGORY_1], 
               fillOpacity: 0.4, 
               onMouseOver: this.getShowDetail(bridge)}
-            );}.bind(this)
-          )
+            )
+          }.bind(this))
       )
     );
   },

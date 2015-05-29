@@ -152,8 +152,29 @@ var notifications = Reflux.createStore({
 
 var BridgeMap = React.createClass({
   mixins: [React.addons.PureRenderMixin],
+  getInitialState() {
+    return {
+      dots: 'big',
+    };
+  },
   componentWillMount() {
     this._showing = null;
+  },
+  onZoom(e) {
+    var z = e.target.getZoom(),
+        shouldBe;
+    if (z < 9) {
+      shouldBe = 'big';
+    } else if (z < 12) {
+      shouldBe = 'med';
+    } else if (z < 14) {
+      shouldBe = 'small';
+    } else {
+      shouldBe = 'real';
+    }
+    if (shouldBe !== this.state.dots) {
+      this.setState({dots: shouldBe});
+    }
   },
   getPath(bridgeId) {
     return this.refs[bridgeId].getLeafletElement()._path;
@@ -174,7 +195,11 @@ var BridgeMap = React.createClass({
       '| &copy; <a href="http://cartodb.com/attributions">CartoDB</a> ' +
       '| <a href="http://www.ontario.ca/government/open-government-licence-ontario">Open Government Licence</a> &ndash; Ontario';
     return (
-      <Map center={[49.2867873, -84.7493416]} zoom={5} zoomControl={false}>
+      <Map
+        center={[49.2867873, -84.7493416]}
+        zoom={5}
+        zoomControl={false}
+        onLeafletZoomend={this.onZoom}>
         <TileLayer
           url="http://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png"
           attribution={attribution}
@@ -182,12 +207,17 @@ var BridgeMap = React.createClass({
         {this.props.bridges
           .filter((bridge) =>
             bridge.LATITUDE !== null && bridge.LONGITUDE !== null)
-          .map((bridge) =>
-            <Circle
+          .map((bridge) => {
+            var sizeBump = this.state.dots === 'big' ?
+                  1000 : this.state.dots === 'med' ?
+                  300 : this.state.dots === 'small' ?
+                  75 : 0,
+                radius = (bridge.DECK_LENGTH || 50) + sizeBump;
+            return <Circle
               key={bridge.ID}
               ref={bridge.ID}
               center={[bridge.LATITUDE, bridge.LONGITUDE]}
-              radius={bridge.DECK_LENGTH || 50}
+              radius={radius}
               color="tomato"
               opacity={0}
               weight={16}
@@ -195,7 +225,7 @@ var BridgeMap = React.createClass({
               fillOpacity={0.4}
               onMouseOver={this.getShowDetail(bridge)}
             />
-          )}
+          })}
       </Map>
     );
   },
