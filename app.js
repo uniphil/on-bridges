@@ -37720,6 +37720,18 @@ function toStatusId(status) {
 }
 
 
+categoryColourMap = {  // colorbrewer!
+  'Beam/Girder' : '#8dd3c7',
+  'Slab'        : '#ffffb3',
+  'Frame'       : '#bebada',
+  'Truss'       : '#fb8072',
+  'Arch'        : '#80b1d3',
+  'Moveable Bridge': '#fdb462',
+  'Other'       : '#b3de69',
+  'Temporary Modular': '#fccde5',
+};
+
+
 var dataActions = Reflux.createActions({
   load: {asyncResult: true},
   parse: {asyncResult: true},
@@ -37876,7 +37888,7 @@ var BridgeMap = React.createClass({displayName: "BridgeMap",
               color: "tomato", 
               opacity: 0, 
               weight: 16, 
-              fillColor: "tomato", 
+              fillColor: categoryColourMap[bridge.SUBCATEGORY_1], 
               fillOpacity: 0.4, 
               onMouseOver: this.getShowDetail(bridge)}
             );}.bind(this)
@@ -37982,7 +37994,9 @@ var BridgeDetail = React.createClass({displayName: "BridgeDetail",
           )
         ), 
         React.createElement("div", {className: "detail type"}, 
-          React.createElement("h1", null, this.props.SUBCATEGORY_1), 
+          React.createElement("h1", {style: {color: categoryColourMap[this.props.SUBCATEGORY_1]}}, 
+            this.props.SUBCATEGORY_1
+          ), 
           React.createElement("p", {className: "specific-type"}, this.props.TYPE_1), 
           React.createElement("p", {className: "material"}, this.props.MATERIAL_1)
         ), 

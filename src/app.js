@@ -23,6 +23,18 @@ function toStatusId(status) {
 }
 
 
+categoryColourMap = {  // colorbrewer!
+  'Beam/Girder' : '#8dd3c7',
+  'Slab'        : '#ffffb3',
+  'Frame'       : '#bebada',
+  'Truss'       : '#fb8072',
+  'Arch'        : '#80b1d3',
+  'Moveable Bridge': '#fdb462',
+  'Other'       : '#b3de69',
+  'Temporary Modular': '#fccde5',
+};
+
+
 var dataActions = Reflux.createActions({
   load: {asyncResult: true},
   parse: {asyncResult: true},
@@ -179,7 +191,7 @@ var BridgeMap = React.createClass({
               color="tomato"
               opacity={0}
               weight={16}
-              fillColor="tomato"
+              fillColor={categoryColourMap[bridge.SUBCATEGORY_1]}
               fillOpacity={0.4}
               onMouseOver={this.getShowDetail(bridge)}
             />
@@ -285,7 +297,9 @@ var BridgeDetail = React.createClass({
           </p>
         </div>
         <div className="detail type">
-          <h1>{this.props.SUBCATEGORY_1}</h1>
+          <h1 style={{color: categoryColourMap[this.props.SUBCATEGORY_1]}}>
+            {this.props.SUBCATEGORY_1}
+          </h1>
           <p className="specific-type">{this.props.TYPE_1}</p>
           <p className="material">{this.props.MATERIAL_1}</p>
         </div>
