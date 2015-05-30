@@ -1,6 +1,7 @@
 var request = require('then-request');
 var Reflux = require('reflux');
 var React = require('react/addons');
+var ReactSlider = require('react-slider');
 var {Map, TileLayer, Circle, Popup} = require('react-leaflet');
 
 
@@ -48,6 +49,10 @@ var notificationActions = Reflux.createActions({
 
 var bridgeActions = Reflux.createActions({
   showDetail: {},
+});
+
+var filterActions = Reflux.createActions({
+  setYears: {},
 });
 
 dataActions.load.listen(() =>
@@ -112,8 +117,25 @@ var bridges = Reflux.createStore({
 var filteredBridges = Reflux.createStore({
   mixins: [DataMixin],
   init() {
-    this.data = [];
-    this.listenTo(bridges, this.setData, this.setData);
+    this.state = {
+      bridges: [],
+      years: [1900, 2015],
+    };
+    this.listenTo(bridges, this.setBridges, this.setBridges);
+    this.listenTo(filterActions.setYears, this.setYears, this.setYears);
+  },
+  setBridges(bridges) {
+    this.state.bridges = bridges;
+    this.emit();
+  },
+  setYears(years) {
+    this.state.years = years;
+    this.emit();
+  },
+  get() {
+    return this.state.bridges.filter((bridge) =>
+      bridge.YEAR_BUILT >= this.state.years[0] &&
+      bridge.YEAR_BUILT <= this.state.years[1]);
   },
 });
 
@@ -318,6 +340,38 @@ var Event = React.createClass({
 });
 
 
+var YearFilter = React.createClass({
+  getInitialState() {
+    return {
+      low: 1906,
+      high: 2014,
+    };
+  },
+  changeYear(to) {
+    filterActions.setYears(to);
+    this.setState({
+      low: to[0],
+      high: to[1],
+    });
+  },
+  render() {
+    return (
+      <ReactSlider
+        min={1900}
+        max={2020}
+        minDistance={1}
+        withBars={true}
+        pearling={true}
+        defaultValue={[this.state.low, this.state.high]}
+        onChange={this.changeYear}>
+          <span className="low">{this.state.low}</span>
+          <span className="high">{this.state.high}</span>
+      </ReactSlider>
+    );
+  },
+});
+
+
 var CategoriesChart = React.createClass({
   render() {
     return (
@@ -330,7 +384,7 @@ var CategoriesChart = React.createClass({
         )}
       </ul>
     );
-  }
+  },
 });
 
 
@@ -444,7 +498,7 @@ var Notification = React.createClass({
 var App = React.createClass({
   mixins: [
     Reflux.connect(notifications, 'notification'),
-    Reflux.connect(bridges, 'bridges'),
+    Reflux.connect(filteredBridges, 'bridges'),
     Reflux.connect(detail, 'detail'),
     Reflux.connect(bridgeStats, 'stats'),
   ],
@@ -456,6 +510,7 @@ var App = React.createClass({
       <div className="annoying-react-wrap">
         <BridgeMap bridges={this.state.bridges} />
         <div className="aggregates">
+          <YearFilter />
           <CategoriesChart {...this.state.stats} />
           <Legend />
         </div>

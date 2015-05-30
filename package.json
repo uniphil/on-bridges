@@ -25,6 +25,7 @@
     "leaflet": "^0.7.3",
     "react": "^0.13.3",
     "react-leaflet": "^0.6.1",
+    "react-slider": "^0.4.2",
     "reflux": "^0.2.7",
     "then-request": "^2.1.1"
   },
